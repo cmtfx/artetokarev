@@ -1,0 +1,8 @@
+body {
+    min-height: 100rem;
+    /* padding-top: 4.5rem; */
+}
+
+.page, .page-alt {
+    padding-top: 4.5rem;
+}
