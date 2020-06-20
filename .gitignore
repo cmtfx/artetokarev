@@ -1,2 +1,2 @@
-tmp/
-assets/img/
+/tmp/*
+/assets/img/*
