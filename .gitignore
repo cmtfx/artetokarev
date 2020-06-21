@@ -1,2 +1,5 @@
 /v1/**
 /v2/assets/img/**
+/v2/tmp/**
+/v2/cache/**
+/v2/assets/css/fonts/**
