@@ -15,25 +15,96 @@
         <link href="assets/css/main.css" rel="stylesheet">
     </head>
 
-    <body>
+    <body data-spy="scroll" data-target="#navbar">
         <!-- navbar section -->
-        <header></header>
+        <header>
+            <nav class="navbar navbar-dark bg-dark navbar-expand-md fixed-top" id="navbar">
+                <a class="navbar-brand" href="#">Home</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="#portfolio">Our Work</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
         <!-- end navbar section -->
         
         <!-- portfolio section -->
-        <div id="portfolio"></div>
+        <div class="page" id="portfolio">
+            <div class="container">
+                <!-- pagetitle & description -->
+                <div class="jumbotron text-center">
+                    <div class="container">
+                        <h1 class="title">Pagetitle for work</h1>
+                        <p class="lead text-muted">Long pagetitle or short description for portfolio section</p>
+                    </div>
+                </div>
+                <!-- portfolio -->
+                <div class="container">
+                    <div class="row">
+                        <!-- albums filter -->
+                        <div class="col-md-3">
+                            <h4>Type of work</h4>
+                            <ul class="work-nav albums-filters-group">
+                                <!-- filters -->
+                            </ul>
+                        </div>
+                        <!-- grid albums -->
+                        <div class="col-md-9">
+                            <div class="container">
+                                <div class="row">
+                                    <!-- albums grid v1 -->
+                                    <ul class="albums-grid row">
+                                        <!-- albums -->
+                                    </ul>
+                                    <!-- albums grid v2 -->
+                                    <!-- <div class="col-md-4"></div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- end portfolio section -->
 
         <!-- about us section -->
-        <div id="about"></div>
+        <div class="page-alt" id="about">
+            <div class="container">
+                <!-- pagetitle & description -->
+                        <div class="jumbotron text-center">
+                            <div class="container">
+                                <h1 class="title">Pagetitle for about us</h1>
+                                <p class="lead text-muted">Long pagetitle or short description for about section</p>
+                            </div>
+                        </div>
+                <!-- about us -->
+            </div>
+        </div>
         <!-- end about us section -->
 
         <!-- contact section -->
-        <div id="contact"></div>
+        <div class="page" id="contact">
+            <div class="container">
+                <!-- pagetitle & description -->
+                        <div class="jumbotron text-center">
+                            <div class="container">
+                                <h1 class="title">Pagetitle for contacts</h1>
+                                <p class="lead text-muted">Long pagetitle or short description for contact section</p>
+                            </div>
+                        </div>
+                <!-- contacts -->
+            </div>
+        </div>
         <!-- end contact section -->
 
         <!-- footer section -->
-        <footer></footer>
+        <footer class="page-alt"></footer>
         <!-- end footer section -->
 
         <!-- jquery, popper, bootstrap js-->

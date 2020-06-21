@@ -1,5 +1,8 @@
 /v1/**
-/v2/assets/img/**
-/v2/tmp/**
-/v2/cache/**
 /v2/assets/css/fonts/**
+/v2/assets/css/lib/**
+/v2/assets/img/**
+/v2/assets/js/lib/**
+/v2/core/cache/**
+/v2/core/log/**
+/v2/tmp/**
