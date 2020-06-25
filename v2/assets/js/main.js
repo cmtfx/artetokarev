@@ -1,22 +1,39 @@
+// v0.1.0
 'use-strict'
 
 let TEMPLATE = {};
 let properties = {
     gUrl: {
         'keys': {
-            'portfolio': '1fXhBIb50Hj6Slo9hRgjdrhfyUXLItvMZX9u19nTEhRs',
+            'albums': '1fXhBIb50Hj6Slo9hRgjdrhfyUXLItvMZX9u19nTEhRs',
             'category': '',
         },
-        makeUrl(key) {
+        'urlPrev': {
+            'v0': 'https://spreadsheets.google.com/feeds/list/',
+        },
+        'urlLast': {
+            'getSheet': '/od6/public/values?alt=json',
+            'setSheet': '',
+        },
+        makeUrl(key, typeQuery) {
             // key existence check
             if(!key || typeof key != 'string') {
-                alert('key not set'); // temporary construction
+                alert('key not set (#001)'); // temporary construction
+                return;
             } else {
-                let urlPrev = 'https://spreadsheets.google.com/feeds/list/';
-                let urlLast = '/od6/public/values?alt=json';
-                key = urlPrev + key + urlLast;
+                let queryUrl;
+                switch(typeQuery) {
+                    case 'get':
+                        queryUrl = this['urlPrev']['v0'] + key + this['urlLast']['getSheet'];
+                        break;
+                    case 'set':
+                        key = '';
+                        break
+                    default:
+                        alert('typeQuery not set (#002)'); // temporary construction
+                }
+                return queryUrl;
             }
-            return key;
         },
     },
     libUrl: {
@@ -30,36 +47,42 @@ let properties = {
             'isotop': 'https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js',
         },
     },
+    errorMessages: {},
 };
 
 TEMPLATE.fetchAlbumsGrid = function() {
-    // get gSheet object
-    // query
-    let prepareOuery = function(url, calback) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'json';
-        xhr.onload = function() {
-            let status = xhr.status;
-            (status == 200) ? calback(null, xhr.response) : calback(status, xhr.response);
-        };
-        xhr.send();
+    let key = properties.gUrl['keys']['albums']; // get key for makeUrl function
+    
+    function getSheet(url) {
+        if (!url) {
+            alert('url was not received (#003)'); // temporary construction
+            return
+        }
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'json';
+            xhr.onload = () => resolve(xhr.response);
+            xhr.onerror = () => reject(xhr.statusText);
+            xhr.send();
+        });
     }
 
-    let key = properties.gUrl['keys']['portfolio']; // get key for makeUrl function
-    
-    prepareOuery(properties.gUrl.makeUrl(key), function(err, data) {
-        if (err != null) {
-            alert(err); // temporary construction
-            console.log(err);
+    getSheet(properties.gUrl.makeUrl(key, 'get')).then(result => {
+        if (!result) {
+            return false;
         } else {
-            data = data['feed']['entry'];
-            // console.log(data);
+            let data = result['feed']['entry'];
             document.querySelector('.albums-grid').innerHTML = fetchAlbumsItems(data);
             document.querySelector('.work-nav').innerHTML = fetchAlbumsFilters(data);
-
-            // TEMPLATE.albumsGridFilter();
+            return true;
         }
+    }, error => {
+        alert(`"${error}" noname error #004`);
+        // console.log(error);
+    }).then(result => {
+        (result != true) ? alert('.then return false') : alert(result); // enableFilters();
+        // console.log(result);
     });
 
     function fetchAlbumsItems(data) {
@@ -95,32 +118,31 @@ TEMPLATE.fetchAlbumsGrid = function() {
 
         return categoryItems;
     }
+
+    let enableFilters = function() {
+        let container = $('.albums-grid').isotope({
+            // options
+            itemSelector: '.albums-grid-item',
+            layoutMode: 'fitRows'
+        });
+    
+        $('.albums-filters-group').on('click', 'a', function() {
+            let filterValue = $(this).attr('data-filter');
+            container.isotope({filter: filterValue});
+        });
+    
+        $('.work-nav').each(function(i, filterGroup) {
+            let button = $(filterGroup);
+            button.on('click', 'a', function() {
+                button.find('.active').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    }
 };
 
-TEMPLATE.albumsGridFilter = function() {
-    let container = $('.albums-grid');
-    container.isotope({
-        // options
-        itemSelector: '.albums-grid-item',
-        layoutMode: 'fitRows'
-    });
+TEMPLATE.showErrorMessage = function() {}
 
-    $('.albums-filters-group').on('click', 'a', function() {
-        let filterValue = $(this).attr('data-filter');
-        container.isotope({filter: filterValue});
-    });
-
-    $('.albums-filters-group').each(function(i, filterGroup) {
-        let button = $(filterGroup);
-        button.on('click', 'a', function() {
-            button.find('.active').removeClass('active');
-            $(this).addClass('active');
-        })
-    });
-}
-
-TEMPLATE.showErrorMessage = function() {
-    
-}
+TEMPLATE.run = function() {};
 
 TEMPLATE.fetchAlbumsGrid();
