@@ -1,4 +1,4 @@
-// v0.1.0
+// v0.1.1
 'use-strict'
 
 let TEMPLATE = {};
@@ -52,7 +52,7 @@ let properties = {
 
 TEMPLATE.fetchAlbumsGrid = function() {
     let key = properties.gUrl['keys']['albums']; // get key for makeUrl function
-    
+
     function getSheet(url) {
         if (!url) {
             alert('url was not received (#003)'); // temporary construction
@@ -69,24 +69,17 @@ TEMPLATE.fetchAlbumsGrid = function() {
     }
 
     getSheet(properties.gUrl.makeUrl(key, 'get')).then(result => {
-        if (!result) {
+        if(!result) {
             return false;
-        } else {
-            let data = result['feed']['entry'];
-            document.querySelector('.albums-grid').innerHTML = fetchAlbumsItems(data);
-            document.querySelector('.work-nav').innerHTML = fetchAlbumsFilters(data);
-            return true;
         }
-    }, error => {
-        alert(`"${error}" noname error #004`);
-        // console.log(error);
-    }).then(result => {
-        (result != true) ? alert('.then return false') : alert(result); // enableFilters();
-        // console.log(result);
-    });
+        let data = result['feed']['entry'];
+        fetchItems(data);
+    }, error => console.log(error));
 
-    function fetchAlbumsItems(data) {
+    function fetchItems(data) {
         let albumsItems = '';
+        let category = new Set();
+        let categoryItems = `<li><a class="filter-group active" data-filter="*" href="#filter">All Projects</a></li>`;
         for (let i = 0; i < data.length; i++) {
             if (data[i]['gsx$published']['$t'] != false) {
                 albumsItems += `<li class="albums-grid-item col-md-4 ${data[i]['gsx$category']['$t']}">`;
@@ -96,53 +89,39 @@ TEMPLATE.fetchAlbumsGrid = function() {
                 albumsItems += `</a>`;
                 albumsItems += `<img src="${data[i]['gsx$imgthumb']['$t']}" class="img-fluid" alt="${data[i]['gsx$title']['$t']}">`;
                 albumsItems += `</li>`;
-            }
-        }
-        return albumsItems;
-    }
-
-    function fetchAlbumsFilters(data) {
-        let category = new Set();
-        let categoryItems = `<li><a class="filter-group active" data-filter="*" href="#filter">All Projects</a></li>`;
-
-        for (let i = 0; i < data.length; i++) {
-            if (data[i]['gsx$published']['$t'] != false) {
-                let item = data[i];
                 category.add(data[i]['gsx$category']['$t']);
             }
         }
-
-        for (let value of  category){
-            categoryItems += `<li><a class="filter-group" data-filter=".${value}" href="#filter">work 1</a></li>`;
+        for (let value of category){
+            categoryItems += `<li><a class="filter-group" data-filter=".${value}" href="#filter">${value}</a></li>`;
         }
-
-        return categoryItems;
-    }
-
-    let enableFilters = function() {
-        let container = $('.albums-grid').isotope({
-            // options
-            itemSelector: '.albums-grid-item',
-            layoutMode: 'fitRows'
-        });
-    
-        $('.albums-filters-group').on('click', 'a', function() {
-            let filterValue = $(this).attr('data-filter');
-            container.isotope({filter: filterValue});
-        });
-    
-        $('.work-nav').each(function(i, filterGroup) {
-            let button = $(filterGroup);
-            button.on('click', 'a', function() {
-                button.find('.active').removeClass('active');
-                $(this).addClass('active');
-            });
-        });
+        document.querySelector('.albums-grid').insertAdjacentHTML('afterbegin', albumsItems);
+        document.querySelector('.work-nav').insertAdjacentHTML('afterbegin', categoryItems);
     }
 };
 
+TEMPLATE.enableFilters = function() {
+    let container = $('.albums-grid').isotope({
+        // options
+        itemSelector: '.albums-grid-item',
+        layoutMode: 'fitRows'
+    });
+
+    $('.albums-filters-group').on('click', 'a', function() {
+        let filterValue = $(this).attr('data-filter');
+        container.isotope({filter: filterValue});
+    });
+
+    $('.work-nav').each(function(i, filterGroup) {
+        let button = $(filterGroup);
+        button.on('click', 'a', function() {
+            button.find('.active').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+}
+
 TEMPLATE.showErrorMessage = function() {}
 
-TEMPLATE.run = function() {};
-
 TEMPLATE.fetchAlbumsGrid();
+setTimeout(() => TEMPLATE.enableFilters(), 2000);
