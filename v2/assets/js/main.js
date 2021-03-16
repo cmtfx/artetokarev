@@ -1,4 +1,4 @@
-// v0.1.1
+// v0.1.2
 'use-strict'
 
 let TEMPLATE = {};
@@ -59,10 +59,27 @@ let properties = {
                 xhr.open('GET', url, true);
                 xhr.responseType = 'json';
                 xhr.onload = () => resolve(xhr.response);
-                xhr.onerror = () => reject(xhr.statusText);
+                xhr.onerror = () => {
+                    let result = [xhr.status, xhr.statusText, xhr.response,];
+                    return reject(result);
+                };
                 xhr.send();
+                
             });
-        }
+        },
+        loadScript(url) {
+            if(!url) {
+                alert('url was not received (#005)'); // temporary construction
+                return
+            }
+            return new Promise(function(resolve, reject) {
+                let script = document.createElement('script');
+                script.src = url;
+                script.onload = () => resolve(script);
+                script.onerror = () => reject(new Error(`Script loading error ${url}`));
+                document.body.append(script);
+            });
+        },
     },
     errorMessages: {},
 };
@@ -76,7 +93,11 @@ TEMPLATE.fetchAlbumsGrid = function() {
         }
         let data = result['feed']['entry'];
         fetchItems(data);
-    }, error => console.log(error));
+    }, error => {
+        alert("Connection error. Check your internet connection (#004)"); // temporary construction
+        console.log(error);
+    })
+    .then(result => TEMPLATE.loadLib(), error => alert('Error #006'));
 
     function fetchItems(data) {
         let albumsItems = '';
@@ -100,6 +121,14 @@ TEMPLATE.fetchAlbumsGrid = function() {
         document.querySelector('.albums-grid').insertAdjacentHTML('afterbegin', albumsItems);
         document.querySelector('.work-nav').insertAdjacentHTML('afterbegin', categoryItems);
     }
+};
+
+TEMPLATE.loadLib = function() {
+    properties.lib.loadScript(properties.libUrl.js.jquery)
+    .then(script => properties.lib.loadScript(properties.libUrl.js.popper), error => console.log(error))
+    .then(script => properties.lib.loadScript(properties.libUrl.js.bootstrap), error => console.log(error))
+    .then(script => properties.lib.loadScript(properties.libUrl.js.isotop), error => console.log(error))
+    .then(script => TEMPLATE.enableFilters());
 };
 
 TEMPLATE.enableFilters = function() {
@@ -126,4 +155,3 @@ TEMPLATE.enableFilters = function() {
 TEMPLATE.showErrorMessage = function() {}
 
 TEMPLATE.fetchAlbumsGrid();
-setTimeout(() => TEMPLATE.enableFilters(), 2000);
