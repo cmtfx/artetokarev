@@ -35,6 +35,7 @@ let properties = {
                 return queryUrl;
             }
         },
+        
     },
     libUrl: {
         'css': {
@@ -47,28 +48,29 @@ let properties = {
             'isotop': 'https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js',
         },
     },
+    lib: {
+        xhr(url) {
+            if(!url) {
+                alert('url was not received (#003)'); // temporary construction
+                return
+            }
+            return new Promise((resolve, reject) => {
+                let xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'json';
+                xhr.onload = () => resolve(xhr.response);
+                xhr.onerror = () => reject(xhr.statusText);
+                xhr.send();
+            });
+        }
+    },
     errorMessages: {},
 };
 
 TEMPLATE.fetchAlbumsGrid = function() {
     let key = properties.gUrl['keys']['albums']; // get key for makeUrl function
 
-    function getSheet(url) {
-        if (!url) {
-            alert('url was not received (#003)'); // temporary construction
-            return
-        }
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.responseType = 'json';
-            xhr.onload = () => resolve(xhr.response);
-            xhr.onerror = () => reject(xhr.statusText);
-            xhr.send();
-        });
-    }
-
-    getSheet(properties.gUrl.makeUrl(key, 'get')).then(result => {
+    properties.lib.xhr(properties.gUrl.makeUrl(key, 'get')).then(result => {
         if(!result) {
             return false;
         }
