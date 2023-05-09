@@ -6,3 +6,4 @@
 /v2/core/cache/**
 /v2/core/log/**
 /v2/tmp/**
+/v3/**
